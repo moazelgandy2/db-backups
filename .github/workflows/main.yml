@@ -1,0 +1,23 @@
+name: Backup DB
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Backup DB
+      run: |
+        mysqldump -u root -p u838827957_amr > db_backup.sql
+    - name: Commit and Push
+      run: |
+        git config user.name "moazelgandy2"
+        git config user.email "zezogameing1234@gmail.com"
+        git add db_backup.sql
+        git commit -m "Automatic backup $(date +%Y-%m-%d_%H:%M:%S)"
+        git push https://${{ secrets.access_token }}:x-oauth-basic@github.com/moazelgandy2/db-backups.git master
